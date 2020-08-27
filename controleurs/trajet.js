@@ -5,7 +5,6 @@ const Membre = require("../modele/Membre");
 
 exports.proposerDeplacement = async (req, res, next) => {
     let formulaire = req.body.formulaire;
-    console.log(formulaire);
     for (let i = 0; i < formulaire.etapes.length; i++) {
         await Ville.findOneAndUpdate(
             {code: formulaire.etapes[i].ville.code},
@@ -61,4 +60,31 @@ exports.proposerDeplacement = async (req, res, next) => {
         { new: true, useFindAndModify: false })
         .catch(error => res.status(500).json({ error }));
     res.status(200).json();
+}
+
+exports.rechercherTrajets = async (req, res, next) => {
+    let formulaire = req.body.formulaire;
+    const villeDepart = await Ville.findOne({code: formulaire.villeDepart.code});
+    const villeArrivee = await Ville.findOne({code: formulaire.villeArrivee.code});
+    let dateBis = new Date(formulaire.date);
+    dateBis.setDate(dateBis.getDate()+1);
+    const date = new Date(formulaire.date);
+    let trajets = [];
+    if (villeArrivee && villeDepart) {
+        trajets = await Trajet.find(
+            {
+                //nbPlacesRestantes: {$gte: formulaire.nbPlaces},
+                villeDepart: villeDepart._id,
+                villeArrivee: villeArrivee._id,
+                dateDepart: {$gte: date, $lt: dateBis},
+            },
+            'lieuDepart lieuArrivee villeDepart villeArrivee dateDepart dateArrivee prix deplacement'
+        )
+            .populate('villeDepart').populate('villeArrivee')
+            .populate({path: 'deplacement', populate: {path: 'conducteur', select: '_id nom prenom'}})
+            .populate('participants')
+            .catch(error => res.status(500).json({error}));
+    }
+    trajets = trajets.filter(trajet => trajet.deplacement.nbPlacesRestantes >= formulaire.nbPlaces);
+    res.status(200).json(trajets);
 }
