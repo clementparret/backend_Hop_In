@@ -29,6 +29,12 @@ const Membre = Utilisateur.discriminator('Membre', new mongoose.Schema({
                 ref: "Trajet",
             }
         ],
+        deplacements: [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: "Deplacement",
+            }
+        ],
     }),
 );
 

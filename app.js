@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 
 const membreRoutes = require('./routes/membre');
 const utilisateurRoutes = require('./routes/utilisateur');
+const trajetRoutes = require('./routes/trajet');
 
 mongoose.connect('mongodb://127.0.0.1:27017/HopIn',
     { useNewUrlParser: true,
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 
 app.use('/hopin/membre', membreRoutes);
 app.use('/hopin/utilisateur', utilisateurRoutes);
+app.use('/hopin/trajet', trajetRoutes);
 
 
 module.exports = app;

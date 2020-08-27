@@ -4,7 +4,7 @@ const Deplacement = mongoose.Schema({
     date: { type: Date, required: true },
     nbPlacesProposees: { type: Number, required: true },
     nbPlacesRestantes: { type: Number, required: true },
-    commentaire: { type: String, required: true },
+    commentaire: { type: String },
     conducteur: {
         type: mongoose.Schema.ObjectId,
         ref: 'Membre'

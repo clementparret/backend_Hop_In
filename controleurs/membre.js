@@ -8,10 +8,10 @@ exports.inscrireMembre = (req, res, next) => {
     const ville = {
         code: req.body.ville.code,
         nom: req.body.ville.nom,
-        codePostal: req.body.ville.codePostal,
+        codesPostaux: req.body.ville.codePostal,
         codeDepartement: req.body.ville.codeDepartement,
     };
-    Ville.findOneAndUpdate( {}, ville, {new: true, upsert: true, useFindAndModify: false})
+    Ville.findOneAndUpdate( {code: req.body.ville.code}, ville, {new: true, upsert: true, useFindAndModify: false})
         .then(
             (docVille) => {
                 bcrypt.hash(req.body.membre.motDePasse, 10)
