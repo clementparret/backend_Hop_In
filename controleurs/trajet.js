@@ -15,11 +15,13 @@ exports.proposerDeplacement = async (req, res, next) => {
             });
     }
     const deplacement = new Deplacement({
+        annule: false,
         date: new Date(formulaire.date),
         nbPlacesProposees: formulaire.nbPlaces,
         nbPlacesRestantes: formulaire.nbPlaces,
         commentaire: formulaire.commentaire,
         conducteur: req.params.id,
+        voiture: formulaire.voiture,
     });
     deplacement.save().catch((error) => {
         res.status(500).json({error: error})
@@ -81,10 +83,28 @@ exports.rechercherTrajets = async (req, res, next) => {
             'lieuDepart lieuArrivee villeDepart villeArrivee dateDepart dateArrivee prix deplacement'
         )
             .populate('villeDepart').populate('villeArrivee')
-            .populate({path: 'deplacement', populate: {path: 'conducteur', select: '_id nom prenom'}})
+            .populate({path: 'deplacement',
+                populate: {path: 'conducteur voiture', select: '_id nom prenom modele marque couleur'}})
             .populate('participants')
             .catch(error => res.status(500).json({error}));
     }
     trajets = trajets.filter(trajet => trajet.deplacement.nbPlacesRestantes >= formulaire.nbPlaces);
+    trajets = trajets.filter(trajet => trajet.deplacement.annule === false);
     res.status(200).json(trajets);
+}
+
+exports.candidater = async (req, res, next) => {
+    for (let i = 0; i < req.body.nbPlaces; i++) {
+        Trajet.findByIdAndUpdate(
+            req.body.trajetId,
+            { $push: { candidats: req.body.utilisateurId } },
+            { new: true, useFindAndModify: false })
+            .catch(error => res.status(500).json({ error }));
+        Membre.findByIdAndUpdate(
+            req.body.utilisateurId,
+            { $push: { trajetsCandidat: req.body.trajetId } },
+            { new: true, useFindAndModify: false })
+            .catch(error => res.status(500).json({ error }));
+    }
+    res.status(200).json();
 }

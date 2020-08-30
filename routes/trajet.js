@@ -5,5 +5,6 @@ const trajetCtrl = require('../controleurs/trajet');
 
 router.post('/proposerDeplacement/:id', trajetCtrl.proposerDeplacement);
 router.post('/rechercherTrajets', trajetCtrl.rechercherTrajets);
+router.post('/candidater', trajetCtrl.candidater);
 
 module.exports = router;

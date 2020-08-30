@@ -31,6 +31,9 @@ exports.authentifierUtilisateur = (req, res, next) => {
 exports.rechercherUtilisateurParId = (req, res, next) => {
     Utilisateur.findById(req.params.id)
         .populate('voitures').populate('ville')
+        .populate({path: 'trajetsCandidat',
+            populate: {path: 'deplacement candidats',
+                populate: {path: 'conducteur voiture', select: '_id prenom modele marque couleur'}}})
         .then(utilisateur => {
             if (!utilisateur) {
                 return res.status(401).json({ error: 'Utilisateur non trouvé' });
