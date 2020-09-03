@@ -32,8 +32,14 @@ exports.rechercherUtilisateurParId = (req, res, next) => {
     Utilisateur.findById(req.params.id)
         .populate('voitures').populate('ville')
         .populate({path: 'trajetsCandidat',
-            populate: {path: 'deplacement candidats',
+            populate: {path: 'deplacement villeDepart villeArrivee',
                 populate: {path: 'conducteur voiture', select: '_id prenom modele marque couleur'}}})
+        .populate({path: 'trajetsParticipant',
+            populate: {path: 'deplacement villeDepart villeArrivee',
+                populate: {path: 'conducteur voiture', select: '_id prenom modele marque couleur'}}})
+        .populate({path: 'deplacements',
+            populate: {path: 'trajets voiture',
+                populate: {path: 'candidats participants refuses villeDepart villeArrivee', select: '_id prenom nom'}}})
         .then(utilisateur => {
             if (!utilisateur) {
                 return res.status(401).json({ error: 'Utilisateur non trouvé' });

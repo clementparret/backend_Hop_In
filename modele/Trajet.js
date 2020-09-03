@@ -22,14 +22,18 @@ const Trajet = mongoose.Schema({
         {
             type: mongoose.Schema.ObjectId,
             ref: "Membre",
-            nbPlaces: { type: Number, required: true },
         }
     ],
     participants: [
         {
             type: mongoose.Schema.ObjectId,
             ref: "Membre",
-            nbPlaces: { type: Number, required: true },
+        }
+    ],
+    refuses: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: "Membre",
         }
     ],
 });
