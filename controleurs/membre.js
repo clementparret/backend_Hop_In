@@ -80,8 +80,29 @@ exports.ajouterVoiture = (req, res, next) => {
         .catch((error) => {res.status(400).json({error: error})});
 }
 
-exports.modifierMembre = (req, res, next) => {
-    Membre.findByIdAndUpdate(req.params.id, req.body, { new: true, useFindAndModify: false })
+exports.desactiverVoiture = (req, res, next) => {
+    Voiture.findByIdAndUpdate(req.params.id, { active: false }, { new: true, useFindAndModify: false })
+        .then(voiture => res.status(200).json(voiture))
+        .catch(error => res.status(500).json({ error }));
+}
+
+exports.modifierMembre = async (req, res, next) => {
+    if (req.body.membre.hasOwnProperty('dateNaissance')) {
+        req.body.membre.dateNaissance = new Date(req.body.membre.dateNaissance);
+    }
+    if (req.body.hasOwnProperty('ville')) {
+        await Ville.findOneAndUpdate(
+            {code: req.body.ville.code},
+            req.body.ville,
+            {new: true, upsert: true, useFindAndModify: false})
+            .then( docVille => {
+                req.body.membre.ville = docVille._id;
+            })
+            .catch((error) => {
+                res.status(500).json({error: error})
+            });
+    }
+    await Membre.findByIdAndUpdate(req.params.id, req.body.membre, { new: true, useFindAndModify: false })
         .then(membre => res.status(200).json(membre))
         .catch(error => res.status(400).json({ error }));
 }

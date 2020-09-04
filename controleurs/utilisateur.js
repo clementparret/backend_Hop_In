@@ -32,11 +32,13 @@ exports.rechercherUtilisateurParId = (req, res, next) => {
     Utilisateur.findById(req.params.id)
         .populate('voitures').populate('ville')
         .populate({path: 'trajetsCandidat',
-            populate: {path: 'deplacement villeDepart villeArrivee',
-                populate: {path: 'conducteur voiture', select: '_id prenom modele marque couleur'}}})
+            populate: {path: 'deplacement villeDepart villeArrivee candidats participants',
+                populate: {path: 'conducteur voiture trajets', select: '_id prenom modele marque couleur',
+                    populate: {path: 'participants villeDepart villeArrivee', select: '_id prenom nom'}}}})
         .populate({path: 'trajetsParticipant',
-            populate: {path: 'deplacement villeDepart villeArrivee',
-                populate: {path: 'conducteur voiture', select: '_id prenom modele marque couleur'}}})
+            populate: {path: 'deplacement villeDepart villeArrivee candidats participants',
+                populate: {path: 'conducteur voiture trajets', select: '_id prenom modele marque couleur',
+                    populate: {path: 'participants villeDepart villeArrivee', select: '_id prenom nom'}}}})
         .populate({path: 'deplacements',
             populate: {path: 'trajets voiture',
                 populate: {path: 'candidats participants refuses villeDepart villeArrivee', select: '_id prenom nom'}}})
