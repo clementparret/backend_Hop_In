@@ -3,6 +3,13 @@ const Trajet = require('../modele/Trajet');
 const Deplacement = require('../modele/Deplacement');
 const Membre = require("../modele/Membre");
 
+/**
+ * Crée un nouveau déplacement et tous les trajets associés
+ * @param req requête HTTP reçue
+ * @param res réponse HTTP à émettre
+ * @param next
+ * @returns {Promise<void>}
+ */
 exports.proposerDeplacement = async (req, res, next) => {
     let formulaire = req.body.formulaire;
     for (let i = 0; i < formulaire.etapes.length; i++) {
@@ -64,6 +71,13 @@ exports.proposerDeplacement = async (req, res, next) => {
     res.status(200).json();
 }
 
+/**
+ * Recherche dans la base de données les trajets correspondant aux paramètres passés
+ * @param req requête HTTP reçue
+ * @param res réponse HTTP à émettre
+ * @param next
+ * @returns {Promise<void>}
+ */
 exports.rechercherTrajets = async (req, res, next) => {
     let formulaire = req.body.formulaire;
     const villeDepart = await Ville.findOne({code: formulaire.villeDepart.code});
@@ -92,6 +106,13 @@ exports.rechercherTrajets = async (req, res, next) => {
     res.status(200).json(trajets);
 }
 
+/**
+ * Permet à un membre de se porter candidat sur un trajet
+ * @param req requête HTTP reçue
+ * @param res réponse HTTP à émettre
+ * @param next
+ * @returns {Promise<void>}
+ */
 exports.candidater = async (req, res, next) => {
     for (let i = 0; i < req.body.nbPlaces; i++) {
         await Trajet.findByIdAndUpdate(
@@ -108,6 +129,13 @@ exports.candidater = async (req, res, next) => {
     res.status(200).json();
 }
 
+/**
+ * Permet au conducteur d'annuler un déplacement qu'il a créé
+ * @param req requête HTTP reçue
+ * @param res réponse HTTP à émettre
+ * @param next
+ * @returns {Promise<void>}
+ */
 exports.annulerDeplacement = async (req, res, next) => {
     Deplacement.findByIdAndUpdate(
         req.params.id,
@@ -117,6 +145,13 @@ exports.annulerDeplacement = async (req, res, next) => {
         .catch(error => res.status(500).json({ error }));
 }
 
+/**
+ * Permet au conducteur d'accepter un candidat sur un de ses trajets
+ * @param req requête HTTP reçue
+ * @param res réponse HTTP à émettre
+ * @param next
+ * @returns {Promise<void>}
+ */
 exports.accepterCandidat = async (req, res, next) => {
     let trajet = await Trajet.findByIdAndUpdate(
         req.body.trajetId,
@@ -200,6 +235,13 @@ exports.accepterCandidat = async (req, res, next) => {
     res.status(200).json();
 }
 
+/**
+ * Permet à un conducteur de refuser un candidat sur un de ses trajets
+ * @param req requête HTTP reçue
+ * @param res réponse HTTP à émettre
+ * @param next
+ * @returns {Promise<void>}
+ */
 exports.refuserCandidat = async (req, res, next) => {
     await Trajet.findByIdAndUpdate(
         req.body.trajetId,
